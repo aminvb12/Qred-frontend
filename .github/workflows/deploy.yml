@@ -60,21 +60,27 @@ jobs:
             --no-fail-on-empty-changeset \
             --region ${{ env.AWS_REGION }}
 
-      - name: Get CloudFront distribution ID
+      - name: Get CloudFront outputs
         id: cf
         run: |
           DIST_ID=$(aws cloudformation describe-stacks \
             --stack-name ${{ env.STACK_NAME }} \
             --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
             --output text)
+          CF_DOMAIN=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDomain'].OutputValue" \
+            --output text)
           echo "distribution_id=$DIST_ID" >> $GITHUB_OUTPUT
+          echo "cf_domain=$CF_DOMAIN" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # API calls go through CloudFront /api/* → ALB — no mixed content
+          VITE_API_URL: https://${{ steps.cf.outputs.cf_domain }}/api
         run: npm run build
 
       - name: Upload to S3

@@ -6,6 +6,11 @@ Parameters:
     Type: String
     Default: qred-frontend
 
+  ALBDomain:
+    Type: String
+    Default: qred-alb-1540545119.us-east-1.elb.amazonaws.com
+    Description: ALB domain name (no protocol)
+
 Resources:
 
   # ── S3 Bucket (private — CloudFront serves it via OAC) ────────────────────
@@ -59,6 +64,19 @@ Resources:
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
             S3OriginConfig: {}
             OriginAccessControlId: !GetAtt OAC.Id
+          - Id: ALBOrigin
+            DomainName: !Ref ALBDomain
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only  # CloudFront → ALB over HTTP internally
+        # /api/* → ALB (no caching)
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: ALBOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # CachingDisabled managed policy
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # AllViewerExceptHostHeader
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
