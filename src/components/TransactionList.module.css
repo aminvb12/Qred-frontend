@@ -1,0 +1,47 @@
+.section {
+  background: #fff;
+  border-radius: 8px;
+  margin: 0 12px;
+  padding: 16px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.row:last-of-type { border-bottom: none; }
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ocr { font-size: 14px; color: #1a1a1a; }
+.date { font-size: 12px; color: #999; }
+.amount { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 0;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+}
+
+.chevron { font-size: 18px; color: #999; }
