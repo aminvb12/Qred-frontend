@@ -11,10 +11,10 @@ export const getCards = (companyId: string) =>
   client.get<Card[]>(`/companies/${companyId}/cards`).then(r => r.data);
 
 export const getInvoices = (companyId: string) =>
-  client.get<Invoice[]>(`/companies/${companyId}/invoices?type=statement`).then(r => r.data);
+  client.get<Invoice[]>(`/companies/${companyId}/invoices`).then(r => r.data);
 
-export const getTransactions = (companyId: string) =>
-  client.get<Transaction[]>(`/companies/${companyId}/transactions`).then(r => r.data);
+export const getTransactions = (companyId: string, cardId: string) =>
+  client.get<Transaction[]>(`/companies/${companyId}/transactions?cardId=${cardId}`).then(r => r.data);
 
 export const activateCard = (companyId: string, cardId: string) =>
   client.post<Card>(`/companies/${companyId}/cards/${cardId}/activations`).then(r => r.data);
