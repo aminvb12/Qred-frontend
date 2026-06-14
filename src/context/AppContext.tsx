@@ -55,13 +55,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     Promise.all([
       getCards(selectedCompany.id),
       getInvoices(selectedCompany.id),
-      getTransactions(selectedCompany.id),
+      getTransactions(selectedCompany.id, cards[0]?.id ?? ''),
     ]).then(([cardsData, invoicesData, txData]) => {
       setCards(cardsData);
       setInvoices(invoicesData.filter(i => i.company_id === selectedCompany.id));
       setTransactions(txData);
     }).catch(() => setError('Failed to load data'));
-  }, [selectedCompany?.id]);
+  }, [selectedCompany?.id, cards[0]?.id]);
 
   const updateCard = (updated: Card) =>
     setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
