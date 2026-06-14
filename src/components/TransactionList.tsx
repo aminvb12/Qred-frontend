@@ -19,7 +19,6 @@ export default function TransactionList({ transactions }: Props) {
       {preview.map(tx => (
         <div key={tx.id} className={styles.row}>
           <div className={styles.left}>
-            <span className={styles.ocr}>OCR {tx.ocr_number}</span>
             <span className={styles.date}>{fmtDate(tx.date)}</span>
           </div>
           <span className={styles.amount}>{fmt(tx.amount)}</span>
