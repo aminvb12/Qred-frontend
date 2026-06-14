@@ -13,8 +13,6 @@ export default function InvoicesPage() {
   const navigate = useNavigate();
   const { invoices, loading, error } = useApp();
 
-  const statementInvoices = invoices.filter(i => i.type === 'statement');
-
   if (loading) return <div className={styles.loading}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
@@ -26,11 +24,11 @@ export default function InvoicesPage() {
         <span />
       </header>
 
-      {statementInvoices.length === 0 ? (
+      {invoices.length === 0 ? (
         <div className={styles.empty}>No invoices</div>
       ) : (
         <ul className={styles.list}>
-          {statementInvoices.map(invoice => {
+          {invoices.map(invoice => {
             const { label, color } = statusLabel(invoice.status);
             return (
               <li
