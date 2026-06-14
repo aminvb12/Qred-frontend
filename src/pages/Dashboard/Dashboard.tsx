@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useApp } from '../../context/AppContext';
 import { Invoice, Company } from '../../types';
 import { activateCard } from '../../api/companies';
@@ -32,8 +33,13 @@ export default function Dashboard() {
 
     const handleActivateCard = async () => {
         if (!card || !selectedCompany) return;
-        const updated = await activateCard(selectedCompany.id, card.id);
-        updateCard(updated);
+        try {
+            const updated = await activateCard(selectedCompany.id, card.id);
+            updateCard(updated);
+            toast.success('Card activated successfully!');
+        } catch {
+            toast.error('Failed to activate card. Please try again.');
+        }
     };
 
     if (loading) return <div className={styles.loading} data-testid="loading">Loading...</div>;
