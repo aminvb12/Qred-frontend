@@ -16,8 +16,7 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   const card = cards[0] ?? null;
-  const totalDue = invoices
-    .filter(i => i.type === 'statement' && i.status === 'pending')
+  const totalDue = invoices.filter(i => i.status.toLowerCase() === 'pending')
     .reduce((sum, i) => sum + Number(i.amount), 0);
 
   const handleActivateCard = async () => {
