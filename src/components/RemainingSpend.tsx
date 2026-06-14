@@ -10,16 +10,16 @@ export default function RemainingSpend({ card }: Props) {
   const pct = (card.current_credit / card.max_credit) * 100;
 
   return (
-    <section className={styles.section}>
+    <section className={styles.section} data-testid="remaining-spend">
       <p className={styles.label}>Remaining spend</p>
       <div className={styles.row}>
-        <span className={styles.amount}>
+        <span className={styles.amount} data-testid="remaining-amount">
           {fmt(card.current_credit)}/{fmt(card.max_credit)} kr
         </span>
         <span className={styles.chevron}>›</span>
       </div>
       <div className={styles.progressBar}>
-        <div className={styles.progress} style={{ width: `${pct}%` }} />
+        <div className={styles.progress} data-testid="progress-bar" style={{ width: `${pct}%` }} />
       </div>
       <p className={styles.hint}>based on your set limit</p>
     </section>

@@ -20,26 +20,26 @@ export default function CardImage({ card }: Props) {
   const isActive = card.status === 'active';
 
   return (
-    <div className={`${styles.card} ${!isActive ? styles.inactive : ''}`}>
+    <div className={`${styles.card} ${!isActive ? styles.inactive : ''}`} data-testid="card-image">
       <div className={styles.top}>
         <span className={styles.brand}>qred.</span>
-        <span className={styles.status}>
+        <span className={styles.status} data-testid="card-status">
           {isActive ? 'Active' : card.status.replace('_', ' ')}
         </span>
       </div>
 
-      <div className={styles.number}>
+      <div className={styles.number} data-testid="card-number">
         {maskCardNumber(card.card_number)}
       </div>
 
       <div className={styles.bottom}>
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Expires</span>
-          <span className={styles.fieldValue}>{formatExpiry(card.exp_date)}</span>
+          <span className={styles.fieldValue} data-testid="card-expiry">{formatExpiry(card.exp_date)}</span>
         </div>
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Limit</span>
-          <span className={styles.fieldValue}>
+          <span className={styles.fieldValue} data-testid="card-limit">
             {new Intl.NumberFormat('sv-SE').format(card.max_credit)} kr
           </span>
         </div>

@@ -37,38 +37,39 @@ export default function InvoicesPage() {
         loadInvoices();
     }, [companyId]);
 
-    if (loading) return <div className={styles.loading}>Loading...</div>;
-    if (error) return <div className={styles.error}>{error}</div>;
+    if (loading) return <div className={styles.loading} data-testid="loading">Loading...</div>;
+    if (error) return <div className={styles.error} data-testid="error">{error}</div>;
 
     return (
-        <div className={styles.page}>
+        <div className={styles.page} data-testid="invoices-page">
             <header className={styles.header}>
-                <button className={styles.backBtn} onClick={() => navigate('/')}>‹ Back</button>
+                <button className={styles.backBtn} data-testid="back-btn" onClick={() => navigate('/')}>‹ Back</button>
                 <h1 className={styles.title}>Invoices</h1>
                 <span />
             </header>
 
             {invoices.length === 0 ? (
-                <div className={styles.empty}>No invoices</div>
+                <div className={styles.empty} data-testid="empty-invoices">No invoices</div>
             ) : (
-                <ul className={styles.list}>
+                <ul className={styles.list} data-testid="invoice-list">
                     {invoices.map(invoice => {
                         const { label, color } = statusLabel(invoice.status);
                         return (
                             <li
                                 key={invoice.id}
                                 className={styles.item}
+                                data-testid="invoice-item"
                                 onClick={() => navigate(`/invoices/${invoice.id}?companyId=${companyId}`)}
                             >
                                 <div className={styles.itemTop}>
-                                    <span className={styles.from}>{invoice.from}</span>
-                                    <span className={styles.amount}>
+                                    <span className={styles.from} data-testid="invoice-from">{invoice.from}</span>
+                                    <span className={styles.amount} data-testid="invoice-amount">
                                         {new Intl.NumberFormat('sv-SE').format(invoice.amount)} kr
                                     </span>
                                 </div>
                                 <div className={styles.itemBottom}>
-                                    <span className={styles.due}>Due {new Date(invoice.due_date).toLocaleDateString('sv-SE')}</span>
-                                    <span className={styles.status} style={{ color }}>{label}</span>
+                                    <span className={styles.due} data-testid="invoice-due">Due {new Date(invoice.due_date).toLocaleDateString('sv-SE')}</span>
+                                    <span className={styles.status} data-testid="invoice-status" style={{ color }}>{label}</span>
                                 </div>
                             </li>
                         );

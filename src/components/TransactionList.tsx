@@ -14,18 +14,18 @@ export default function TransactionList({ transactions }: Props) {
   const remaining = transactions.length - preview.length;
 
   return (
-    <section className={styles.section}>
+    <section className={styles.section} data-testid="transaction-list">
       <p className={styles.title}>Latest transactions</p>
       {preview.map(tx => (
-        <div key={tx.id} className={styles.row}>
+        <div key={tx.id} className={styles.row} data-testid="transaction-row">
           <div className={styles.left}>
-            <span className={styles.date}>{fmtDate(tx.date)}</span>
+            <span className={styles.date} data-testid="transaction-date">{fmtDate(tx.date)}</span>
           </div>
-          <span className={styles.amount}>{fmt(tx.amount)}</span>
+          <span className={styles.amount} data-testid="transaction-amount">{fmt(tx.amount)}</span>
         </div>
       ))}
       {remaining > 0 && (
-        <div className={styles.more}>
+        <div className={styles.more} data-testid="transaction-more">
           <span>{remaining} more items in transaction view</span>
           <span className={styles.chevron}>›</span>
         </div>

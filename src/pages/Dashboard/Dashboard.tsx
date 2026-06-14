@@ -36,11 +36,11 @@ export default function Dashboard() {
         updateCard(updated);
     };
 
-    if (loading) return <div className={styles.loading}>Loading...</div>;
-    if (error) return <div className={styles.error}>{error}</div>;
+    if (loading) return <div className={styles.loading} data-testid="loading">Loading...</div>;
+    if (error) return <div className={styles.error} data-testid="error">{error}</div>;
 
     return (
-        <div className={styles.phone}>
+        <div className={styles.phone} data-testid="dashboard">
             {/* Header */}
             <header className={styles.header}>
                 <div className={styles.logo}>
@@ -60,11 +60,11 @@ export default function Dashboard() {
 
             {/* Invoice + Card section */}
             <section className={styles.card}>
-                <div className={styles.row} onClick={handleNavigateToInvoices} style={{ cursor: 'pointer' }}>
+                <div className={styles.row} data-testid="invoice-due-row" onClick={handleNavigateToInvoices} style={{ cursor: 'pointer' }}>
                     <span className={styles.rowLabel}>
                         Invoice due
                         {totalDue > 0 && (
-                            <span className={styles.badge}>
+                            <span className={styles.badge} data-testid="invoice-badge">
                                 {new Intl.NumberFormat('sv-SE').format(totalDue)} kr
                             </span>
                         )}
@@ -75,7 +75,7 @@ export default function Dashboard() {
                 {card
                     ? <CardImage card={card} />
                     : (
-                        <div className={styles.row}>
+                        <div className={styles.row} data-testid="no-card">
                             <span className={styles.rowLabel}>No card yet</span>
                         </div>
                     )
@@ -93,17 +93,18 @@ export default function Dashboard() {
                 {card?.status === 'under_review' && (
                     <button
                         className={styles.primaryBtn}
+                        data-testid="activate-card-btn"
                         onClick={handleActivateCard}
                     >
                         Activate card
                     </button>
                 )}
                 {card?.status === 'active' && (
-                    <button className={styles.primaryBtn} disabled>
+                    <button className={styles.primaryBtn} data-testid="card-active-btn" disabled>
                         Card active
                     </button>
                 )}
-                <button className={styles.secondaryBtn}>
+                <button className={styles.secondaryBtn} data-testid="support-btn">
                     Contact Qred's support
                 </button>
             </div>
