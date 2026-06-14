@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from 'react';
 import { Company, Card, Invoice, Transaction, User } from '../types';
 import { getUsers, getCompanies, getCards, getInvoices, getTransactions } from '../api/companies';
 
@@ -28,7 +28,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -46,7 +46,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => { loadData(); }, []);
 
@@ -63,14 +63,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }).catch(() => setError('Failed to load data'));
   }, [selectedCompany?.id, cards[0]?.id]);
 
-  const updateCard = (updated: Card) =>
-    setCards(prev => prev.map(c => c.id === updated.id ? updated : c));
+  const updateCard = useCallback((updated: Card) =>
+    setCards(prev => prev.map(c => c.id === updated.id ? updated : c)), []);
+
+  const handleSetSelectedCompany = useCallback((company: Company) => {
+    setSelectedCompany(company);
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    user,
+    companies,
+    selectedCompany,
+    cards,
+    invoices,
+    transactions,
+    loading,
+    error,
+    setSelectedCompany: handleSetSelectedCompany,
+    updateCard,
+    refetch: loadData,
+  }), [user, companies, selectedCompany, cards, invoices, transactions, loading, error, handleSetSelectedCompany, updateCard, loadData]);
 
   return (
-    <AppContext.Provider value={{
-      user, companies, selectedCompany, cards, invoices, transactions,
-      loading, error, setSelectedCompany, updateCard, refetch: loadData,
-    }}>
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );
