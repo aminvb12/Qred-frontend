@@ -13,6 +13,9 @@ export const getCards = (companyId: string) =>
 export const getInvoices = (companyId: string) =>
   client.get<Invoice[]>(`/companies/${companyId}/invoices`).then(r => r.data);
 
+export const getInvoice = (companyId: string, invoiceId: string) =>
+  client.get<Invoice>(`/companies/${companyId}/invoices/${invoiceId}`).then(r => r.data);
+
 export const getTransactions = (companyId: string, cardId: string) =>
   client.get<Transaction[]>(`/companies/${companyId}/transactions?cardId=${cardId}`).then(r => r.data);
 

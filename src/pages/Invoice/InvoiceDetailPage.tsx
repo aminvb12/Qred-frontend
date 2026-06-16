@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Invoice } from '../../types';
-import { getInvoices } from '../../api/companies';
+import { getInvoice } from '../../api/companies';
 import styles from './InvoiceDetailPage.module.css';
 
 export default function InvoiceDetailPage() {
@@ -21,13 +21,8 @@ export default function InvoiceDetailPage() {
                     setLoading(false);
                     return;
                 }
-                const invoices = await getInvoices(companyId);
-                const found = invoices.find(i => i.id === id);
-                if (!found) {
-                    setError('Invoice not found');
-                } else {
-                    setInvoice(found);
-                }
+                const data = await getInvoice(companyId, id);
+                setInvoice(data);
             } catch {
                 setError('Failed to load invoice');
             } finally {
