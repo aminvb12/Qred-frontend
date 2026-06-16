@@ -55,12 +55,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     Promise.all([
       getCards(selectedCompany.id),
       getInvoices(selectedCompany.id),
-      getTransactions(selectedCompany.id, cards[0]?.id ?? ''),
-    ]).then(([cardsData, invoicesData, txData]) => {
+    ]).then(([cardsData, invoicesData]) => {
       setCards(cardsData);
       setInvoices(invoicesData.filter(i => i.company_id === selectedCompany.id));
-      setTransactions(txData);
     }).catch(() => setError('Failed to load data'));
+  }, [selectedCompany?.id]);
+
+  useEffect(() => {
+    if (!selectedCompany || !cards[0]) return;
+    getTransactions(selectedCompany.id, cards[0].id).then(txData => {
+      setTransactions(txData);
+    }).catch(() => setError('Failed to load transactions'));
   }, [selectedCompany?.id, cards[0]?.id]);
 
   const updateCard = useCallback((updated: Card) =>
