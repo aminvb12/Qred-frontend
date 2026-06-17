@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Company, Card, Invoice, Transaction, User } from '../types';
 import { getUsers, getCompanies, getCards, getInvoices, getTransactions } from '../api/companies';
 
@@ -19,15 +20,22 @@ interface AppState {
 const AppContext = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+
   const [user, setUser] = useState<User | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedCompany, setSelectedCompanyState] = useState<Company | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const STORAGE_KEY = 'selectedCompanyId';
+
+  // Read searchParams via ref so loadData doesn't re-create on URL changes
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -39,17 +47,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (firstUser) {
         const companiesData = await getCompanies(firstUser.id);
         setCompanies(companiesData);
-        setSelectedCompany(companiesData[0] ?? null);
+
+        // Priority: URL param → localStorage → first company
+        const companyIdParam =
+          searchParamsRef.current.get('companyId') ||
+          localStorage.getItem(STORAGE_KEY);
+        const defaultCompany = companiesData[0] ?? null;
+
+        const company = (companyIdParam && companiesData.find(c => c.id === companyIdParam)) || defaultCompany;
+        setSelectedCompanyState(company);
+        if (company) {
+          localStorage.setItem(STORAGE_KEY, company.id);
+          setSearchParams({ companyId: company.id }, { replace: true });
+        }
       }
     } catch {
       setError('Failed to load data');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setSearchParams]);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
+  // Fetch cards + invoices when company changes
   useEffect(() => {
     if (!selectedCompany) return;
     Promise.all([
@@ -61,19 +84,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }).catch(() => setError('Failed to load data'));
   }, [selectedCompany?.id]);
 
+  // Fetch all transactions for the company — no card filter to avoid stale card_id from previous company
   useEffect(() => {
-    if (!selectedCompany || !cards[0]) return;
-    getTransactions(selectedCompany.id, cards[0].id).then(txData => {
-      setTransactions(txData);
-    }).catch(() => setError('Failed to load transactions'));
-  }, [selectedCompany?.id, cards[0]?.id]);
+    if (!selectedCompany) return;
+    setTransactions([]);
+    getTransactions(selectedCompany.id).then(setTransactions)
+      .catch(() => setError('Failed to load transactions'));
+  }, [selectedCompany?.id]);
 
   const updateCard = useCallback((updated: Card) =>
     setCards(prev => prev.map(c => c.id === updated.id ? updated : c)), []);
 
   const handleSetSelectedCompany = useCallback((company: Company) => {
-    setSelectedCompany(company);
-  }, []);
+    setSelectedCompanyState(company);
+    localStorage.setItem('selectedCompanyId', company.id);
+    setSearchParams({ companyId: company.id });
+  }, [setSearchParams]);
 
   const contextValue = useMemo(() => ({
     user,

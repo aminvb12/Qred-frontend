@@ -8,31 +8,29 @@ import InvoiceDetailPage from './pages/Invoice/InvoiceDetailPage';
 export default function App() {
   return (
     <BrowserRouter>
-      <Toaster
-        position="bottom-center"
-        toastOptions={{
-          success: {
-            style: {
-              background: '#16a34a',
-              color: '#fff',
-              fontSize: '14px',
-              borderRadius: '8px',
-              padding: '10px 16px',
+      <AppProvider>
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            success: {
+              style: {
+                background: '#16a34a',
+                color: '#fff',
+                fontSize: '14px',
+                borderRadius: '8px',
+                padding: '10px 16px',
+              },
+              iconTheme: { primary: '#fff', secondary: '#16a34a' },
+              duration: 3000,
             },
-            iconTheme: { primary: '#fff', secondary: '#16a34a' },
-            duration: 3000,
-          },
-        }}
-      />
-      <Routes>
-        <Route path="/" element={
-          <AppProvider>
-            <Dashboard />
-          </AppProvider>
-        } />
-        <Route path="/invoices" element={<InvoicesPage />} />
-        <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
-      </Routes>
+          }}
+        />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
+        </Routes>
+      </AppProvider>
     </BrowserRouter>
   );
 }
